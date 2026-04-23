@@ -4,10 +4,6 @@
 use core::panic::PanicInfo;
 use core::arch::asm;
 
-// 0x 3E20 0008 1<<3
-// 0x 3E1C 001C 1<<21
-// 0x 3E28 001C 1<<21
-
 mod boot {
     core::arch::global_asm!(
         ".section .text._start",
@@ -32,21 +28,36 @@ pub extern "C" fn kmain() -> ! {
     unsafe {
         let gpio_base = 0x3F20_0000 as *mut u32;
         
-        // GPFSEL2 is offset 0x08. Set Pin 21 to Output (001 in bits 3-5)
-        core::ptr::write_volatile(gpio_base.add(2), 1 << 3);
+        // setup pin 21 to be an output & 20 to be an input
+        core::ptr::write_volatile(gpio_base.add(2), (1 << 3) | 0);
+
+        let mut on = false;
+        let mut pressed = false;
 
         loop {
-            // Turn pin 21 ON (GPSET0 is offset 0x1C / 4 = 7)
-            core::ptr::write_volatile(gpio_base.add(7), 1 << 21);
+            let button = core::ptr::read_volatile(gpio_base.add(13));
 
-            for _ in 0..100_000 { asm!("nop"); }
+            if button & (1<<20) != 0 && !pressed{
+                on = !on;
+                pressed = true;
+                for _ in 0..10_000 { core::arch::asm!("nop"); }
+            } 
 
-            // Turn pin 21 OFF (GPCLR0 is offset 0x28 / 4 = 10)
-            core::ptr::write_volatile(gpio_base.add(10), 1 << 21);
+            if button & (1<<20) == 0 {
+                pressed = false;
+                for _ in 0..10_000 { core::arch::asm!("nop"); }
+            }
 
-            for _ in 0..100_000 { asm!("nop"); }
+
+            if on {
+                core::ptr::write_volatile(gpio_base.add(7), 1<<21);
+            } else {
+                core::ptr::write_volatile(gpio_base.add(10), 1<<21);
+            }
         }
+
     }
+
 }
 
 #[panic_handler]
