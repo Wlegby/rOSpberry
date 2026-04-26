@@ -8,10 +8,23 @@ mod bsp;
 
 use drivers::gpio;
 use core::panic::PanicInfo;
+use crate::drivers::time;
 
 #[unsafe(no_mangle)]
 pub extern "C" fn kmain() -> ! {
-    loop {}
+
+    panic!("hello");
+    // gpio::setup(21, gpio::Modes::Output);
+    // gpio::output(21, true);
+    //
+    // gpio::setup(2, gpio::Modes::Output);
+    //
+    loop {
+        // gpio::output(2, false);
+        // time::wait_msec(500_000);
+        // gpio::output(2, true);
+        // time::wait_msec(500_000);
+    }
 }
 
 #[panic_handler]

@@ -28,7 +28,7 @@ pub fn setup(pin: usize, mode: Modes) {
     };
 
     if offset == 10 {
-        todo!()
+        panic!("Invalid pin");
     }
 
     unsafe {
