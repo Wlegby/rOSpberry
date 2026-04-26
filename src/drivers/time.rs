@@ -1,7 +1,7 @@
 use crate::bsp::memory::*;
-use core::{arch::asm, ptr::read_volatile};
+use core::ptr::read_volatile;
 
-const CS: usize = TIMER_BASE;
+const CS: usize = SYSTEM_TIMER;
 const CLO: usize = CS + 0x4;
 const CHI: usize = CLO + 0x4;
 const C0: usize = CHI + 0x4;
@@ -16,10 +16,18 @@ pub fn get_system_timer() -> u64 {
             read_volatile(CHI as *const u32) as u64,
         )
     };
-    return (h << 32) | l;
+    return h | (l << 32);
 }
 
-pub fn wait_msec(n: u64) {
+pub fn wait_sec(n: u64) {
+    wait_millis(n * 1000);
+}
+
+pub fn wait_millis(n: u64) {
+    wait_microsec(n * 1000);
+}
+
+pub fn wait_microsec(n: u64) {
     let t = get_system_timer();
 
     if t == 0 {
@@ -27,6 +35,7 @@ pub fn wait_msec(n: u64) {
     }
 
     while get_system_timer() - t < n {
-        unsafe { asm!("nop") }
+        // makes the cpu optimize
+        core::hint::spin_loop();
     }
 }

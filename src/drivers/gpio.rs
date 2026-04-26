@@ -25,9 +25,9 @@ pub fn setup(pin: usize, mode: Modes) {
         10..=19 => 1,
         20..=27 => 2,
         _ => 10,
-    };
+    } * 4;
 
-    if offset == 10 {
+    if offset == 40 {
         panic!("Invalid pin");
     }
 
@@ -35,13 +35,18 @@ pub fn setup(pin: usize, mode: Modes) {
         let dst = (GPIO_BASE + offset) as *mut u32;
         let curr_register = read_volatile(dst);
 
-        write_volatile(dst, curr_register | (mode.val() << ((pin % 10) * 3)));
+        let shift = (pin % 10) * 3;
+
+        let mask = 0b111 << shift;
+
+        let new_val = (curr_register & !mask) | (mode.val() << shift);
+
+        write_volatile(dst, new_val);
     }
 }
 
 pub fn output(pin: usize, high: bool) {
     let dst = if high { GPSET0 } else { GPCLR0 } as *mut u32;
-
     unsafe { write_volatile(dst, 1 << pin) };
 }
 

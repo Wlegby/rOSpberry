@@ -1,31 +1,38 @@
-#![allow(unused)]
 #![no_std]
 #![no_main]
 
 mod arch;
 mod drivers;
 mod bsp;
+mod dbg;
 
 use drivers::gpio;
 use core::panic::PanicInfo;
-use crate::drivers::time;
+use crate::{dbg::{fail, success}, drivers::{framebuffer::{FrameBufferSettings, draw_image, init_framebuffer}}};
+
+static LOGO: &[u8] = include_bytes!("logo.raw");
 
 #[unsafe(no_mangle)]
 pub extern "C" fn kmain() -> ! {
+    let mut settings = FrameBufferSettings {
+        width: 1024,
+        height: 768,
+        depth: 32,
+        ..Default::default()
+    };
 
-    panic!("hello");
-    // gpio::setup(21, gpio::Modes::Output);
-    // gpio::output(21, true);
-    //
-    // gpio::setup(2, gpio::Modes::Output);
-    //
-    loop {
-        // gpio::output(2, false);
-        // time::wait_msec(500_000);
-        // gpio::output(2, true);
-        // time::wait_msec(500_000);
+    let response = init_framebuffer(&mut settings);
+
+    if let Ok(()) = response {
+        success();
+        draw_image(&mut settings, 512, 512, LOGO);
+    } else {
+        fail();
     }
+
+    loop {}
 }
+
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
