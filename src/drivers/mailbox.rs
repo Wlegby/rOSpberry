@@ -1,6 +1,7 @@
-use crate::bsp::memory::VIDEOCORE_MAILBOX;
+use crate::bsp::memory::MMIO_BASE;
 use core::ptr::{read_volatile, write_volatile};
 
+const VIDEOCORE_MAILBOX: usize = MMIO_BASE + 0xB880;
 const MBOX_READ: usize = VIDEOCORE_MAILBOX; // We get message from GPU here
 const MBOX_STATUS: usize = VIDEOCORE_MAILBOX + 0x18; // contains information about the MBOX
 const MBOX_WRITE: usize = VIDEOCORE_MAILBOX + 0x20; // we write here to give data to GPU

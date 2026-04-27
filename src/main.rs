@@ -7,28 +7,32 @@ mod bsp;
 mod dbg;
 
 use drivers::gpio;
+use drivers::time;
+use drivers::font;
 use core::panic::PanicInfo;
-use crate::{dbg::{fail, success}, drivers::{framebuffer::{FrameBufferSettings, draw_image, init_framebuffer}}};
+use crate::{drivers::framebuffer::FrameBuffer};
 
 static LOGO: &[u8] = include_bytes!("logo.raw");
 
 #[unsafe(no_mangle)]
 pub extern "C" fn kmain() -> ! {
-    let mut settings = FrameBufferSettings {
-        width: 1024,
-        height: 768,
-        depth: 32,
-        ..Default::default()
-    };
+    let mut framebuff = FrameBuffer::new(1024, 768, 32); 
 
-    let response = init_framebuffer(&mut settings);
+    let response = framebuff.init();
 
-    if let Ok(()) = response {
-        success();
-        draw_image(&mut settings, 512, 512, LOGO);
-    } else {
-        fail();
+    if let Err(_) = response {
+        dbg::fail();
+        panic!();
     }
+
+    dbg::success();
+
+    time::wait_sec(2);
+    framebuff.draw_image( 512, 512, LOGO);
+    time::wait_millis(10);
+    framebuff.clear();
+    font::draw_string(&framebuff, "Hello, world!", 0, 0, 0xFFFFFFFF);
+
 
     loop {}
 }

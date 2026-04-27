@@ -1,6 +1,8 @@
-use crate::bsp::memory::GPIO_BASE;
 use core::ptr::{read_volatile, write_volatile};
 
+use crate::bsp::MMIO_BASE;
+
+const GPIO_BASE: usize = MMIO_BASE + 0x20_0000;
 const GPSET0: usize = GPIO_BASE + 0x1C;
 const GPCLR0: usize = GPIO_BASE + 0x28;
 const GPLEV0: usize = GPIO_BASE + 0x34;
@@ -17,6 +19,13 @@ impl Modes {
             Self::Output => 1,
         }
     }
+}
+
+pub struct Gpio {
+    pub base_addr: usize,
+    pub gpset0: usize,
+    pub gpclr0: usize,
+    pub gplev0: usize,
 }
 
 pub fn setup(pin: usize, mode: Modes) {

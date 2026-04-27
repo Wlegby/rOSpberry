@@ -1,7 +1,7 @@
 use crate::bsp::memory::*;
 use core::ptr::read_volatile;
 
-const CS: usize = SYSTEM_TIMER;
+const CS: usize = MMIO_BASE + 0x3000;
 const CLO: usize = CS + 0x4;
 const CHI: usize = CLO + 0x4;
 const C0: usize = CHI + 0x4;

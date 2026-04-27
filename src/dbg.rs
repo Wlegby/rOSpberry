@@ -1,4 +1,4 @@
-use crate::gpio;
+use crate::drivers::gpio;
 
 pub fn success() {
     // Turn on the pin 16
@@ -7,7 +7,7 @@ pub fn success() {
 }
 
 pub fn fail() {
-    // Turn on the pin 16
+    // Turn on the pin 20
     gpio::setup(20, gpio::Modes::Output);
     gpio::output(20, true);
 }
