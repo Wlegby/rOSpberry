@@ -93,7 +93,14 @@ impl FrameBuffer {
     pub fn clear(&mut self) {
         for j in 0..self.height {
             for i in 0..self.width {
-                self.draw_pixel(i, j, 0xFF);
+                self.draw_pixel(i, j, 0xFF000000);
+            }
+        }
+    }
+    pub fn clear_from(&mut self, line: u32) {
+        for j in line..self.height {
+            for i in 0..self.width {
+                self.draw_pixel(i, j, 0xFF000000);
             }
         }
     }

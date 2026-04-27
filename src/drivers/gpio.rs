@@ -21,13 +21,6 @@ impl Modes {
     }
 }
 
-pub struct Gpio {
-    pub base_addr: usize,
-    pub gpset0: usize,
-    pub gpclr0: usize,
-    pub gplev0: usize,
-}
-
 pub fn setup(pin: usize, mode: Modes) {
     let offset: usize = match pin {
         0..=9 => 0,
