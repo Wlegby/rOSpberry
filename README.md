@@ -1,2 +1,2 @@
-# rOSpberry ![](./ressources/logo.svg)
+# rOSpberry ![](./resources/logo.svg)
 I have started creating an "OS" for the raspberry pi 3b+
