@@ -1,4 +1,4 @@
-use crate::bsp::raspberrypi::memory::VIDEOCORE_MAILBOX;
+use crate::bsp::memory::VIDEOCORE_MAILBOX;
 use core::ptr::{read_volatile, write_volatile};
 
 const MBOX_READ: usize = VIDEOCORE_MAILBOX; // We get message from GPU here
@@ -72,4 +72,3 @@ impl MboxBuffer {
         self.buffer[1] == 0x8000_0000
     }
 }
-
