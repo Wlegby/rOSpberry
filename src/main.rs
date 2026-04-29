@@ -66,12 +66,12 @@ pub extern "C" fn kmain() -> ! {
     //     time::wait_millis(500);
     // }
 
-    gpio::setup(21, gpio::Modes::Output);
+    gpio::setup(16, gpio::Modes::Output);
 
     loop {
-        gpio::output(21, true);
+        gpio::output(16, true);
         time::wait_millis(500);
-        gpio::output(21, false);
+        gpio::output(16, false);
         time::wait_millis(500);
     }
 }

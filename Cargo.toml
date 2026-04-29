@@ -18,5 +18,3 @@ panic = "abort"
 [profile.release]
 panic = "abort"
 
-[build]
-target = "aarch64-unknown-none"

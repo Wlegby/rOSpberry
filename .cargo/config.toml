@@ -1,2 +1,5 @@
+[target.aarch64-unknown-none]
+linker = "rust-lld"
+# No need for "-T" here anymore!
 [build]
 target = "aarch64-unknown-none"
