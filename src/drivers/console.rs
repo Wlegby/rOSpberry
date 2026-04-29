@@ -1,5 +1,4 @@
-use alloc::collections::vec_deque::VecDeque;
-use alloc::string::{String, ToString};
+use heapless::{String, Vec};
 use ttf_parser::Face;
 
 use crate::dbg;
@@ -8,12 +7,10 @@ static FONT: &[u8] = include_bytes!("../font.otb");
 pub const FONT_SIZE: (u32, u32) = (8, 16);
 
 pub struct Console<'a> {
-    lines: VecDeque<String>,
-    width: u32,
-    height: u32,
+    lines: Vec<String<124>, 10>,
+    x: u32,
+    y: u32,
     font_face: Face<'a>,
-    x_pos: u32,
-    y_pos: u32,
     fb: FrameBuffer,
     pub color: u32,
 }
@@ -22,12 +19,10 @@ impl<'a> Console<'a> {
     pub fn init(fb: FrameBuffer) -> Option<Console<'a>> {
         if let Ok(face) = Face::parse(FONT, 0) {
             return Some(Self {
-                lines: VecDeque::new(),
-                width: fb.width / FONT_SIZE.0,
-                height: fb.height / FONT_SIZE.1,
+                lines: Vec::new(),
+                x: 0,
+                y: 0,
                 font_face: face.clone(),
-                x_pos: 0,
-                y_pos: 0,
                 fb,
                 color: 0xFFFFFFFF,
             });
@@ -35,34 +30,31 @@ impl<'a> Console<'a> {
         None
     }
 
-    pub fn print(&mut self, text: &str) {
+    pub fn print(&mut self, text: String<128>) {
         for line in text.lines() {
-            if self.lines.len() == self.height as usize {
-                self.lines.pop_front();
-                self.y_pos = 0;
-                self.fb.clear();
-                for line in self.lines.clone() {
-                    self.draw_line(&line);
-                    self.y_pos += 1;
-                }
-            }
-            self.lines.push_back(line.to_string());
-            self.draw_line(line);
-            self.y_pos += 1;
+            let mut string = String::new();
+            string.push_str(line);
+            self.lines.push(string);
         }
+        self.draw();
     }
 
-    pub fn draw_line(&mut self, line: &str) {
-        for c in line.chars() {
-            self.draw_char(c);
-            self.x_pos += 1;
+    pub fn draw(&mut self) {
+        self.y = 0;
+        for line in self.lines.clone() {
+            self.x = 0;
+            for c in line.chars() {
+                self.draw_char(c);
+                self.x += 1;
+            }
+            self.y += 1;
         }
     }
 
     pub fn draw_char(&self, character: char) {
-        let x_offset = self.x_pos * FONT_SIZE.0;
-        let y_offset = self.y_pos as u32 * FONT_SIZE.1;
-        // Get the Glyph ID
+        let x_offset = self.x as u32 * FONT_SIZE.0;
+        let y_offset = self.y as u32 * FONT_SIZE.1;
+
         if let Some(glyph_id) = self.font_face.glyph_index(character) {
             let strike_size = 16;
 

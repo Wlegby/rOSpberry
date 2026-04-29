@@ -1,0 +1,11 @@
+# Force 64-bit mode (required for your aarch64 kernel)
+arm_64bit=1
+
+# Tell the Pi exactly which kernel file to load
+kernel=kernel8.img
+
+# Ensure the core frequency is stable (important for UART debugging)
+core_freq_min=500
+
+# (Optional) Disable the activity LED if you want to control it manually later
+# dtparam=act_led_trigger=none
