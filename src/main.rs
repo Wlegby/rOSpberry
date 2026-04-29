@@ -40,30 +40,40 @@ static LOGO: &[u8] = include_bytes!("logo.raw");
 pub extern "C" fn kmain() -> ! {
 
     // We still need not make a MMU (Memory management unit)
-    init_heap();
-    let mut framebuff = FrameBuffer::new(1024, 768, 32); 
+    // init_heap();
+    // let mut framebuff = FrameBuffer::new(1024, 768, 32); 
+    //
+    // let response = framebuff.init();
+    //
+    // if let Err(_) = response {
+    //     panic!();
+    // }
+    //
+    // framebuff.draw_image(512, 512, LOGO);
 
-    let response = framebuff.init();
 
-    if let Err(_) = response {
-        panic!();
-    }
+    // let c = Console::init(framebuff);
+    // let mut console = match c {
+    //     Some(c) => c,
+    //     None => {
+    //         dbg::fail();
+    //         panic!();
+    //     }
+    // };
+    //
+    // for i in 0..100 {
+    //     console.print(&format!("line: {}", i));
+    //     time::wait_millis(500);
+    // }
 
-    let c = Console::init(framebuff);
-    let mut console = match c {
-        Some(c) => c,
-        None => {
-            dbg::fail();
-            panic!();
-        }
-    };
+    gpio::setup(21, gpio::Modes::Output);
 
-    for i in 0..100 {
-        console.print(&format!("line: {}", i));
+    loop {
+        gpio::output(21, true);
+        time::wait_millis(500);
+        gpio::output(21, false);
         time::wait_millis(500);
     }
-
-    loop {}
 }
 
 
