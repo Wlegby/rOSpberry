@@ -19,12 +19,13 @@ use drivers::time;
 use drivers::console::Console;
 use drivers::framebuffer::FrameBuffer;
 
+use crate::dbg::fail;
+use crate::dbg::success;
+
 static LOGO: &[u8] = include_bytes!("logo.raw");
 
 #[unsafe(no_mangle)]
 pub extern "C" fn kmain() -> ! {
-
-    panic!();
 
     loop {}
 }
